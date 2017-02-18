@@ -13,8 +13,8 @@ setup(
     version='0.1.0a1',
     description='A collections of common helper functions',
     long_description=long_description,
-    url='',
-    author='',
+    url='https://github.com/kipel/commoners',
+    author='Kippel',
     author_email='',
     license='MIT',
 
