@@ -33,7 +33,8 @@ setup(
 
     keywords='utils helpers',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    install_requires=['requests>=2.12.4'],
+    install_requires=['requests>=2.12.4',
+                      'pyyaml>=3.11'],
 
     # extras_require={
     #    'dev': ['check-manifest'],
