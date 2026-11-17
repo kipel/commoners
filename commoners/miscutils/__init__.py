@@ -25,5 +25,6 @@ def unpickle(path):
 def hash256(s):
     return hashlib.sha256(s.encode()).hexdigest()
 
+
 def hash512(s):
     return hashlib.sha512(s.encode()).hexdigest()
