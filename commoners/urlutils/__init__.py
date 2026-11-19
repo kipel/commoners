@@ -1,12 +1,16 @@
+from typing import Optional, Union
+from enum import StrEnum, auto
+
 import requests
 
 
-RAW = "raw"
-TEXT = "text"
-JSON = "json"
+class ResponseType(StrEnum):
+    RAW = auto()
+    TEXT = auto()
+    JSON = auto()
 
 
-def get_uri(uri, params=None, response=TEXT):
+def get_uri(uri, params=None, response_type: ResponseType = ResponseType.TEXT, is_image: bool = False) -> Union[str, dict, bytes]:
     """
         Makes a simple GET request to the given URL and returns the
         response as text or json. If the request fails it raises
@@ -22,20 +26,40 @@ def get_uri(uri, params=None, response=TEXT):
         Returns:
             str or json: body of the response in the selected format
     """
-    payload = params
 
-    r = requests.get(uri, params=payload)
+    headers = {
+        "User-Agent": "Chrome/63.0.3239.84",
+    }
 
-    if r.status_code == 200:
-        if response == JSON:
-            return r.json()
+    stream = True if is_image else False
 
-        return r.text
-
+    r = requests.get(uri, headers=headers, params=params, stream=stream)
     r.raise_for_status()
 
+    match response_type:
+        case ResponseType.TEXT:
+            return r.text
+        case ResponseType.JSON:
+            return r.json()
+        case ResponseType.RAW:
+            return r.content
+        case _:
+            raise ValueError(f"type of response {response} not supported")
 
-def post_uri(uri, params=None, form=True, response=TEXT):
+
+def get_site(url: str, params: Optional[dict] = None) -> str:
+    return get_uri(uri=url, params=params, response_type=ResponseType.TEXT)
+
+
+def get_site(url: str, params: Optional[dict] = None) -> dict:
+    return get_uri(uri=url, params=params, response_type=ResponseType.JSON)
+
+
+def get_image(url: str, params: Optional[dict] = None) -> bytes:
+    return get_uri(uri=url, params=params, response_type=ResponseType.RAW, is_image=True)
+
+
+def post_uri(uri, params=None, form=True, response: ResponseType = ResponseType.TEXT):
     """
         Makes a simple POST request to the given URL and returns the
         response as text or json. If the request fails it raises
@@ -48,7 +72,7 @@ def post_uri(uri, params=None, form=True, response=TEXT):
             form (bool): how the parameters are codified. When True
                          the request uses a form enconding, when False
                          a json enconding
-            reponse (str): how the response is returned: as a text or
+            reponse (ResponseType): how the response is returned: as a text or
                            json.
 
         Returns:
@@ -62,7 +86,7 @@ def post_uri(uri, params=None, form=True, response=TEXT):
         r = requests.post(uri, json=payload)
 
     if r.status_code == 200:
-        if response == JSON:
+        if response is ResponseType.JSON:
             return r.json()
 
         return r.text
