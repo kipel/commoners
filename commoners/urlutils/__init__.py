@@ -51,7 +51,7 @@ def get_site(url: str, params: Optional[dict] = None) -> str:
     return get_uri(uri=url, params=params, response_type=ResponseType.TEXT)
 
 
-def get_site(url: str, params: Optional[dict] = None) -> dict:
+def get_json(url: str, params: Optional[dict] = None) -> dict:
     return get_uri(uri=url, params=params, response_type=ResponseType.JSON)
 
 
